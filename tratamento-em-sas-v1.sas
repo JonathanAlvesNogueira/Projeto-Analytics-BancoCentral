@@ -1,0 +1,32 @@
+LIBNAME JONY '/home/u63480479/my_shared_file_links/u63480479';
+
+DATA JONY.BACEN_DADOS_IMOVEIS;
+SET WORK.'202310Bens_Imoveis_Grupos'n;
+RUN;
+
+DATA BASE_ANALISE;
+SET JONY.BACEN_DADOS_IMOVEIS;
+	
+	FORMAT NOVA $30.;
+	IF 'Taxa_de_administração'n > 20 THEN NOVA = 'VALOR-ACIMA';
+									 ELSE NOVA = 'VALOR-NORMAL';
+
+ 	format NOME_ADM $60.;
+	Nome_adm = '#Nome_da_administradora'n ;
+
+
+RUN;
+
+PROC SQL;
+    CREATE TABLE BASE_ANALISE_2 AS
+    SELECT
+        NOME_ADM
+        ,CNPJ_DA_ADMINISTRADORA
+		,COUNT(*) AS QTD
+    FROM BASE_ANALISE
+    GROUP BY NOME_ADM
+        	,CNPJ_DA_ADMINISTRADORA
+	ORDER BY QTD DESC
+;
+QUIT;
+
